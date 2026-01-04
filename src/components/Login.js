@@ -1,7 +1,7 @@
-import { Button } from "./app/components/ui/button";
-import { Card } from "./app/components/ui/card";
-import { Input } from "./app/components/ui/input";
-import { Label } from "./app/components/ui/label";
+import { Button } from "./ui/button.tsx";
+import { Card } from "./ui/card.tsx";
+import { Input } from "./ui/input.tsx";
+import { Label } from "./ui/label";
 import { Music } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";

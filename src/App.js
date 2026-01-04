@@ -1,11 +1,12 @@
+import { useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { LoginScreen } from "./Login";
-import { SignupScreen } from "./app/components/SignupScreen";
-import { ConcertRecommendations } from "./app/components/ConcertRecommendations";
-import './App.css';
+import { LoginScreen } from "./components/Login";
+import { SignupScreen } from "./components/Signup";
+import { ConcertRecommendations } from "./components/Concert";
+import './styles/index.css';
 
 function App() {
-const [currentScreen, setCurrentScreen] = useState<AppScreen>("login");
+const [currentScreen, setCurrentScreen] = useState("login");
 
   const handleLogin = () => {
     setCurrentScreen("recommendations");
