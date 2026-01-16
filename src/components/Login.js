@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 export function LoginScreen() {
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -18,12 +18,31 @@ export function LoginScreen() {
     setLoading(true);
 
     try {
-      // TODO: 실제 로그인 API 호출
-      // await login(email, password);
+      const response = await fetch("http://localhost:8080/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: username,
+          password: password,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "로그인 실패");
+      }
+
+      const data = await response.json();
+      
+      // 토큰 저장
+      localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
 
       navigate("/recommendations");
     } catch (err) {
-      alert("로그인 실패");
+      alert(err.message || "로그인 실패");
     } finally {
       setLoading(false);
     }
@@ -48,13 +67,13 @@ export function LoginScreen() {
 
           <form onSubmit={handleSubmit} className="w-full space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">아이디</Label>
+              <Label htmlFor="username">아이디</Label>
               <Input
-                id="email"
+                id="username"
                 type="text"
                 placeholder="아이디를 입력하세요"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
               />
             </div>
