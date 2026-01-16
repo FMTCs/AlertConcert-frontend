@@ -3,20 +3,22 @@ import { Card } from "./ui/card";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Music, CheckCircle2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
-export function SignupScreen({ onSignupComplete, onGoToLogin }) {
+export function SignupScreen() {
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isSpotifyConnected, setIsSpotifyConnected] = useState(false);
+  const navigate = useNavigate();
 
   const handleSpotifyAuth = () => {
     // Mock Spotify authentication
     setIsSpotifyConnected(true);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
@@ -29,10 +31,32 @@ export function SignupScreen({ onSignupComplete, onGoToLogin }) {
       return;
     }
 
-    // Mock signup
-    onSignupComplete();
-  };
+    // Register api 요청 후 test
+    try {
+      const response = await fetch("http://localhost:8080/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: userId,
+          password: password,
+          signupToken: (isSpotifyConnected?"valid":"invalid"), // [TODO] 임시 실제로는 signupToken을 발송
+        }),
+      });
 
+      if (!response.ok) {
+        const errorText = await response.json();
+        throw new Error(errorText.message || "회원가입 실패");
+      }
+
+      alert("회원가입에 성공");
+      navigate("/login");
+
+    } catch (error) {
+      alert(error.message);
+    };
+  }
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-400 via-blue-500 to-purple-600 p-4">
       <Card className="w-full max-w-md p-8 bg-white/95 backdrop-blur-sm">
@@ -122,7 +146,7 @@ export function SignupScreen({ onSignupComplete, onGoToLogin }) {
             <p className="text-sm text-gray-600 text-center">
               이미 계정이 있으신가요?{" "}
               <button
-                onClick={onGoToLogin}
+                onClick={() => navigate("/login")}
                 className="text-blue-600 hover:text-blue-700 font-semibold"
               >
                 로그인
