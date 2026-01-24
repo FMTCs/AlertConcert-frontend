@@ -57,10 +57,10 @@ export function ConcertRecommendations() {
 
       // DTO 필드 매핑 로직
       setUserProfile({
-        topArtists: data.topArtists.slice(0, 5).map(a => a.name),
-        topGenres: data.topGenres.slice(0, 5).map(g => g.name)
+        topArtists: data.topArtists ? data.topArtists.slice(0, 5).map(a => a.name) : [],
+        topGenres: data.topGenres ? data.topGenres.slice(0, 5).map(g => g.name) : []
       });
-      setConcerts(data.recommendedConcerts);
+      setConcerts(data.recommendedConcerts || []);
 
     } catch (err) {
       console.error(err);
@@ -192,9 +192,9 @@ function ConcertCard({ concert, getMatchColor }) {
 
         <div className="p-4 space-y-3">
           <h3 className="font-bold truncate">{concert.concertName}</h3>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-500 font-medium truncate">
             {concert.casts && concert.casts.length > 0
-                ? concert.casts.map(c => c.name).join(", ")
+                ? concert.casts.join(", ")
                 : "출연진 정보 없음"}
           </p>
 
@@ -206,7 +206,9 @@ function ConcertCard({ concert, getMatchColor }) {
           <div className="flex justify-between items-center">
             <div className="flex flex-wrap gap-1">
               {concert.genres && concert.genres.slice(0, 2).map((g, i) => (
-                  <Badge key={i} variant="outline" className="text-[10px]">{g}</Badge>
+                  <Badge key={i} variant="outline" className="text-[10px] px-2 py-0">
+                    {g}
+                  </Badge>
               ))}
             </div>
             <Button
