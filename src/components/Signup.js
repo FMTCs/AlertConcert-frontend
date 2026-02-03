@@ -3,19 +3,64 @@ import { Card } from "./ui/card";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Music, CheckCircle2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 export function SignupScreen() {
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isSpotifyConnected, setIsSpotifyConnected] = useState(false);
+  const [signupToken, setSignupToken] = useState("");
+
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // 컴포넌트 마운트 시 데이터 복구 및 토큰 확인
+  useEffect(() => {
+    // 1. URL 파라미터에서 토큰 확인
+    const params = new URLSearchParams(location.search);
+    const token = params.get("token");
+
+    // 2. 세션 스토리지에서 이전 입력 데이터 확인
+    const savedForm = sessionStorage.getItem('temp_reg_form');
+
+    if (savedForm) {
+      const formData = JSON.parse(savedForm);
+      // 데이터 복구 (기존 입력값 유지)
+      setUserId(formData.userId || "");
+      setPassword(formData.password || "");
+      setConfirmPassword(formData.confirmPassword || "");
+
+      // 3. 토큰이 있다면 인증 성공 처리
+      if (token) {
+        setSignupToken(token);
+        setIsSpotifyConnected(true);
+        
+        // 사용 완료한 세션 데이터 삭제
+        sessionStorage.removeItem('temp_reg_form');
+        
+        // URL에서 토큰 파라미터 제거 (주소창 깔끔하게 유지)
+        window.history.replaceState({}, document.title, "/register");
+        setIsSpotifyConnected(true);
+        console.log("Spotify 인증 성공! 토큰 저장됨.");
+      }
+    }
+  }, [location]);
 
   const handleSpotifyAuth = () => {
-    // Mock Spotify authentication
-    setIsSpotifyConnected(true);
+    // Session Storage에 저장할 데이터 구성
+    const signupForm = {
+        userId,
+        password,
+        confirmPassword,
+    };
+
+    // Session Storage에 데이터 저장
+    sessionStorage.setItem('temp_reg_form', JSON.stringify(signupForm));
+
+    // spotify api OAuth2 요청 연결
+    window.location.href = "http://localhost:8080/auth/spotifyOAuth2";
   };
 
   const handleSubmit = async (e) => {
@@ -41,7 +86,7 @@ export function SignupScreen() {
         body: JSON.stringify({
           username: userId,
           password: password,
-          signupToken: (isSpotifyConnected?"valid":"invalid"), // [TODO] 임시 실제로는 signupToken을 발송
+          signupToken: signupToken,
         }),
       });
 
