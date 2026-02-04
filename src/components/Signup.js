@@ -11,6 +11,7 @@ export function SignupScreen() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isSpotifyConnected, setIsSpotifyConnected] = useState(false);
+  const [spotifyUserId, setSpotifyUserId] = useState("");
   const [signupToken, setSignupToken] = useState("");
 
   const navigate = useNavigate();
@@ -20,7 +21,20 @@ export function SignupScreen() {
   useEffect(() => {
     // 1. URL 파라미터에서 토큰 확인
     const params = new URLSearchParams(location.search);
-    const token = params.get("token");
+    const token = params.get("signupToken");
+    const spotifyUserId = params.get("spotifyUserId");
+
+    // 1. 토큰이 URL에 있는지 먼저 확인 (최우선)
+    if (token) {
+      console.log("토큰 발견:", token);
+      setSignupToken(token);
+      setSpotifyUserId(spotifyUserId);
+      setIsSpotifyConnected(true);
+      
+      // URL 파라미터 제거 (깔끔하게 유지)
+      // replaceState는 상태 변경 후 마지막에 수행하는 것이 안전합니다.
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
 
     // 2. 세션 스토리지에서 이전 입력 데이터 확인
     const savedForm = sessionStorage.getItem('temp_reg_form');
@@ -34,16 +48,7 @@ export function SignupScreen() {
 
       // 3. 토큰이 있다면 인증 성공 처리
       if (token) {
-        setSignupToken(token);
-        setIsSpotifyConnected(true);
-        
-        // 사용 완료한 세션 데이터 삭제
         sessionStorage.removeItem('temp_reg_form');
-        
-        // URL에서 토큰 파라미터 제거 (주소창 깔끔하게 유지)
-        window.history.replaceState({}, document.title, "/register");
-        setIsSpotifyConnected(true);
-        console.log("Spotify 인증 성공! 토큰 저장됨.");
       }
     }
   }, [location]);
@@ -86,10 +91,11 @@ export function SignupScreen() {
         body: JSON.stringify({
           username: userId,
           password: password,
+          spotifyUserId: spotifyUserId,
           signupToken: signupToken,
         }),
       });
-
+      console.log(response.body);
       if (!response.ok) {
         const errorText = await response.json();
         throw new Error(errorText.message || "회원가입 실패");
