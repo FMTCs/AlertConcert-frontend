@@ -166,7 +166,7 @@ export function ConcertRecommendations() {
             </TabsContent>
 
             <TabsContent value="all" className="mt-6 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {concerts.map((concert, idx) => (
+              {concerts.filter(c => c.matchingRate >= 70).map((concert, idx) => (
                   <ConcertCard key={idx} concert={concert} getMatchColor={getMatchColor} />
               ))}
             </TabsContent>
