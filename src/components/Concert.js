@@ -192,9 +192,9 @@ function ConcertCard({ concert, getMatchColor }) {
 
         <div className="p-4 space-y-3">
           <h3 className="font-bold truncate">{concert.concertName}</h3>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-blue-600 font-medium line-clamp-1">
             {concert.casts && concert.casts.length > 0
-                ? concert.casts.map(c => c.name).join(", ")
+                ? concert.casts.join(", ") // 문자열 배열이므로 바로 join 가능
                 : "출연진 정보 없음"}
           </p>
 
