@@ -91,6 +91,7 @@ export function SignupScreen() {
         body: JSON.stringify({
           username: userId,
           password: password,
+          passwordConfirm: confirmPassword,
           spotifyUserId: spotifyUserId,
           signupToken: signupToken,
         }),
