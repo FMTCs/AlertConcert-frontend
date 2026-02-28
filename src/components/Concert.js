@@ -199,8 +199,10 @@ function ConcertCard({ concert, getMatchColor }) {
           </p>
 
           <div className="text-sm text-gray-600 flex items-center space-x-2">
-            <MapPin className="w-4 h-4" />
-            <span>공연장 정보(준비중)</span>
+            <MapPin className="w-4 h-4 text-slate-400" />
+            <span className="truncate">
+            {concert.concertLocation || "장소 정보 없음"}
+          </span>
           </div>
 
           <div className="flex justify-between items-center">
